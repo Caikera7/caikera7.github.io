@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cayque Nunes — Backend Developer & Founder</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='80'%3E%F0%9F%90%BE%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0a0f;
+    --surface:#13121b;
+    --surface-2:#1c1a28;
+    --text:#ece9f5;
+    --text-dim:#8d8aa3;
+    --violet:#8b5cf6;
+    --violet-soft:rgba(139,92,246,.14);
+    --cyan:#2de2c9;
+    --amber:#ffb627;
+    --amber-soft:rgba(255,182,39,.12);
+    --line:rgba(139,92,246,.16);
+    --java:#f0a020;
+    --radius:14px;
+    --display:'Space Grotesk',sans-serif;
+    --mono:'JetBrains Mono',monospace;
+    --body:'Inter',sans-serif;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:var(--body);
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--violet);color:#fff;}
+  a{color:inherit;text-decoration:none;}
+  ul{list-style:none;}
+  button{font-family:inherit;cursor:pointer;background:none;border:none;color:inherit;}
+  img,svg{display:block;}
+
+  a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
+    outline:2px solid var(--cyan);
+    outline-offset:3px;
+    border-radius:4px;
+  }
+
+  canvas#bg-canvas{
+    position:fixed;inset:0;z-index:0;
+    width:100%;height:100%;
+    opacity:.9;
+  }
+
+  .progress-bar{
+    position:fixed;top:0;left:0;height:3px;width:0%;
+    background:linear-gradient(90deg,var(--violet),var(--cyan));
+    z-index:1000;transition:width .1s linear;
+    display:none;
+  }
+
+  .container{
+    max-width:1100px;margin:0 auto;padding:0 28px;position:relative;z-index:1;
+  }
+
+  .browser-chrome{
+    position:fixed;top:0;left:0;right:0;z-index:950;height:34px;
+    background:#0d0c12;border-bottom:1px solid var(--line);
+    display:flex;align-items:center;gap:8px;padding:0 16px;
+  }
+  .browser-chrome .bc-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .browser-chrome .bc-dot.r{background:#ff5f56;} .browser-chrome .bc-dot.y{background:#ffbd2e;} .browser-chrome .bc-dot.g{background:#27c93f;}
+  .bc-url{
+    margin:0 auto;background:var(--surface-2);border:1px solid var(--line);border-radius:99px;
+    padding:3px 16px;font-family:var(--mono);font-size:.7rem;color:var(--text-dim);
+    display:flex;align-items:center;gap:6px;
+  }
+
+  /* ===== NAV ===== */
+  nav.topnav{
+    position:fixed;top:34px;left:0;right:0;z-index:900;
+    background:rgba(10,10,15,.72);
+    backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  .nav-inner{
+    max-width:1100px;margin:0 auto;padding:14px 28px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+  }
+  .brand{
+    font-family:var(--mono);font-weight:700;font-size:.95rem;color:var(--text);
+    display:flex;align-items:center;gap:6px;white-space:nowrap;flex-shrink:0;
+  }
+  .brand .tag{color:var(--violet);}
+  .build-pill{
+    display:flex;
+    align-items:center;gap:6px;font-family:var(--mono);font-size:.7rem;
+    color:var(--text-dim);border:1px solid var(--line);border-radius:99px;
+    padding:4px 10px;flex-shrink:0;
+  }
+  .build-pill .dot{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 8px var(--cyan);animation:pulse 1.8s infinite;}
+  .nav-links{display:flex;align-items:center;gap:22px;font-family:var(--mono);font-size:.82rem;}
+  .nav-links a{color:var(--text-dim);position:relative;padding:4px 0;transition:color .2s;white-space:nowrap;}
+  .nav-links a:hover, .nav-links a.active{color:var(--text);}
+  .nav-links a.active::after{
+    content:'';position:absolute;bottom:-4px;left:0;right:0;height:2px;
+    background:linear-gradient(90deg,var(--violet),var(--cyan));border-radius:2px;
+  }
+  .lang-switch{display:flex;border:1px solid var(--line);border-radius:99px;overflow:hidden;font-family:var(--mono);font-size:.75rem;flex-shrink:0;}
+  .lang-switch button{padding:6px 12px;color:var(--text-dim);transition:.2s;}
+  .lang-switch button.active{background:var(--violet);color:#fff;}
+  .nav-burger{display:none;flex-direction:column;gap:4px;padding:6px;flex-shrink:0;}
+  .nav-burger span{width:20px;height:2px;background:var(--text);border-radius:2px;}
+  .mobile-menu{
+    display:none;position:fixed;top:92px;left:0;right:0;background:var(--surface);
+    border-bottom:1px solid var(--line);z-index:890;padding:18px 28px;
+    flex-direction:column;gap:16px;font-family:var(--mono);font-size:.95rem;
+  }
+  .mobile-menu.open{display:flex;}
+  .mobile-menu a{color:var(--text-dim);}
+
+  /* ===== SCROLL RAIL ===== */
+  .rail{
+    position:fixed;right:26px;top:50%;transform:translateY(-50%);z-index:850;
+    display:flex;flex-direction:column;gap:13px;
+  }
+  .rail a{
+    width:9px;height:9px;border-radius:50%;background:var(--surface-2);
+    border:1px solid var(--line);display:block;position:relative;transition:.25s;
+  }
+  .rail a.active{background:var(--cyan);box-shadow:0 0 10px var(--cyan);}
+  .rail a span{
+    position:absolute;right:20px;top:50%;transform:translateY(-50%);
+    font-family:var(--mono);font-size:.68rem;color:var(--text-dim);
+    white-space:nowrap;opacity:0;transition:.2s;
+  }
+  .rail a:hover span{opacity:1;}
+
+  /* ===== GENERIC SECTION ===== */
+  section{padding:130px 0 60px;position:relative;}
+  section:first-of-type{padding-top:150px;}
+  .eyebrow{
+    font-family:var(--mono);font-size:.8rem;color:var(--cyan);
+    margin-bottom:14px;display:inline-block;
+  }
+  h2.title{
+    font-family:var(--display);font-weight:600;
+    font-size:clamp(1.6rem,3.4vw,2.4rem);margin-bottom:14px;letter-spacing:-.01em;
+  }
+  .section-sub{color:var(--text-dim);max-width:560px;margin-bottom:50px;font-size:.98rem;}
+
+  .reveal{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease;}
+  .reveal.visible{opacity:1;transform:translateY(0);}
+
+  /* ===== HERO ===== */
+  .hero{display:grid;grid-template-columns:1.05fr 1fr;gap:60px;align-items:center;min-height:78vh;}
+  .hero-eyebrow{font-family:var(--mono);color:var(--text-dim);font-size:.85rem;margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+  .hero-eyebrow .cursor{width:8px;height:16px;background:var(--cyan);display:inline-block;animation:blink 1s steps(1) infinite;}
+  h1.name{
+    font-family:var(--display);font-weight:700;font-size:clamp(2.6rem,6vw,4.2rem);
+    line-height:1.02;letter-spacing:-.02em;margin-bottom:14px;
+    background:linear-gradient(135deg,#fff 30%,var(--violet) 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .role-line{font-family:var(--mono);color:var(--cyan);font-size:1.05rem;margin-bottom:22px;}
+  .tagline{color:var(--text-dim);font-size:1.08rem;max-width:480px;margin-bottom:34px;}
+  .cta-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:46px;}
+  .btn{
+    font-family:var(--mono);font-size:.88rem;padding:13px 24px;border-radius:10px;
+    display:inline-flex;align-items:center;gap:8px;transition:.25s;border:1px solid transparent;
+  }
+  .btn-primary{background:var(--violet);color:#fff;box-shadow:0 0 0 0 rgba(139,92,246,.5);}
+  .btn-primary:hover{box-shadow:0 0 24px rgba(139,92,246,.55);transform:translateY(-2px);}
+  .btn-ghost{border:1px solid var(--line);color:var(--text);}
+  .btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);}
+
+  .stat-row{display:flex;gap:14px;flex-wrap:wrap;}
+  .stat-chip{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:14px 18px;min-width:140px;flex:1;
+  }
+  .stat-chip .num{font-family:var(--display);font-size:1.5rem;font-weight:700;color:var(--text);}
+  .stat-chip .lbl{font-size:.8rem;color:var(--text);margin-top:2px;}
+  .stat-chip .sub{font-family:var(--mono);font-size:.7rem;color:var(--text-dim);margin-top:4px;}
+
+  /* terminal / readme shared component */
+  .terminal{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;box-shadow:0 30px 80px -20px rgba(139,92,246,.25);
+  }
+  .term-bar{display:flex;align-items:center;gap:8px;padding:12px 16px;border-bottom:1px solid var(--line);background:var(--surface-2);}
+  .term-bar .dot{width:10px;height:10px;border-radius:50%;}
+  .term-bar .r{background:#ff5f56;} .term-bar .y{background:#ffbd2e;} .term-bar .g{background:#27c93f;}
+  .term-bar .fname{margin-left:auto;font-family:var(--mono);font-size:.72rem;color:var(--text-dim);}
+  .term-body{padding:22px 20px;font-family:var(--mono);font-size:.82rem;color:#c9c6db;min-height:300px;}
+  .term-body .kw{color:var(--violet);} .term-body .str{color:var(--cyan);} .term-body .com{color:var(--text-dim);}
+  #typed-code{white-space:pre-wrap;}
+  .term-cursor{display:inline-block;width:7px;height:14px;background:var(--cyan);vertical-align:middle;animation:blink 1s steps(1) infinite;}
+  .term-log{margin-top:10px;font-size:.78rem;color:var(--text-dim);}
+  .term-log .ok{color:var(--cyan);}
+  .term-log div{opacity:0;animation:fadein .4s forwards;}
+
+  @keyframes blink{50%{opacity:0;}}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.35;}}
+  @keyframes fadein{to{opacity:1;}}
+
+  /* ===== ABOUT / README ===== */
+  .readme-wrap{max-width:760px;}
+  .readme-wrap .term-body{min-height:auto;font-family:var(--body);color:var(--text);}
+  .md-h1{font-family:var(--display);font-size:1.7rem;font-weight:700;margin-bottom:6px;}
+  .md-tagline{color:var(--text-dim);font-size:.95rem;margin-bottom:22px;font-style:italic;}
+  .badge-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px;}
+  .md-badge{font-family:var(--mono);font-size:.72rem;background:var(--surface-2);border:1px solid var(--line);padding:5px 11px;border-radius:99px;color:var(--text-dim);}
+  .md-h2{font-family:var(--mono);font-size:.85rem;color:var(--violet);margin:26px 0 10px;display:flex;align-items:center;gap:6px;}
+  .about-text{color:var(--text-dim);font-size:.95rem;max-width:640px;}
+  .now-list li{font-size:.92rem;color:var(--text);padding:5px 0;display:flex;gap:8px;}
+
+  /* ===== JOURNEY ===== */
+  .timeline{position:relative;padding-left:36px;border-left:1px solid var(--line);}
+  .tl-item{position:relative;padding-bottom:46px;}
+  .tl-item:last-child{padding-bottom:0;}
+  .tl-item::before{
+    content:attr(data-idx);position:absolute;left:-49px;top:0;width:26px;height:26px;
+    border-radius:50%;background:var(--surface);border:1px solid var(--violet);
+    color:var(--cyan);font-family:var(--mono);font-size:.65rem;display:flex;
+    align-items:center;justify-content:center;
+  }
+  .tl-tag{font-family:var(--mono);font-size:.72rem;color:var(--violet);margin-bottom:6px;display:inline-block;}
+  .tl-title{font-family:var(--display);font-size:1.15rem;font-weight:600;margin-bottom:8px;}
+  .tl-desc{color:var(--text-dim);font-size:.95rem;max-width:600px;}
+
+  /* ===== SKILLS (icon grid) ===== */
+  .skills-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:18px;}
+  .skill-category{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:22px;}
+  .cat-head{display:flex;align-items:center;gap:8px;margin-bottom:18px;}
+  .cat-head svg{width:18px;height:18px;color:var(--cyan);flex-shrink:0;}
+  .cat-head h3{font-family:var(--mono);font-size:.76rem;text-transform:uppercase;letter-spacing:.04em;}
+  .skill-icons{display:flex;flex-wrap:wrap;gap:14px;}
+  .skill-item{display:flex;flex-direction:column;align-items:center;gap:6px;width:58px;text-align:center;}
+  .skill-badge{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;transition:.25s;border:1px solid transparent;}
+  .skill-badge svg{width:22px;height:22px;}
+  .skill-item:hover .skill-badge{transform:translateY(-3px);}
+  .skill-item span{font-size:.66rem;color:var(--text-dim);line-height:1.2;}
+
+  /* ===== FOUNDER PROJECT ===== */
+  .founder-card{
+    background:linear-gradient(160deg,var(--surface) 0%,#1a140a 130%);
+    border:1px solid rgba(255,182,39,.35);border-radius:20px;padding:46px;
+    position:relative;overflow:hidden;
+  }
+  .founder-card::before{
+    content:'';position:absolute;top:-60px;right:-60px;width:240px;height:240px;
+    background:radial-gradient(circle,var(--amber-soft),transparent 70%);
+  }
+  .founder-top{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-bottom:10px;}
+  .founder-badge{
+    font-family:var(--mono);font-size:.75rem;color:var(--amber);border:1px solid rgba(255,182,39,.4);
+    padding:5px 12px;border-radius:99px;background:var(--amber-soft);
+  }
+  .status-pill{display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:.72rem;color:var(--text-dim);}
+  .status-pill .dot{width:7px;height:7px;border-radius:50%;background:var(--amber);box-shadow:0 0 8px var(--amber);animation:pulse 1.6s infinite;}
+  .founder-card h3{font-family:var(--display);font-size:clamp(1.8rem,3vw,2.3rem);font-weight:700;margin-bottom:6px;color:#fff;}
+  .founder-subtitle{font-family:var(--mono);font-size:.8rem;color:var(--text-dim);margin-bottom:18px;display:block;}
+  .founder-card p.desc{color:var(--text-dim);max-width:660px;margin-bottom:18px;font-size:1rem;}
+  .founder-extra{color:var(--text-dim);max-width:660px;margin-bottom:28px;font-size:.94rem;}
+  .founder-extra strong{color:var(--amber);font-weight:600;}
+  .feature-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:30px;max-width:560px;}
+  .feature-grid li{display:flex;align-items:center;gap:10px;font-size:.92rem;color:var(--text);}
+  .feature-grid li .ico{color:var(--amber);}
+  .status-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:30px;max-width:680px;}
+  .status-col{background:rgba(0,0,0,.2);border:1px solid var(--line);border-radius:12px;padding:18px;}
+  .status-col h4{font-family:var(--mono);font-size:.76rem;margin-bottom:12px;display:flex;align-items:center;gap:6px;color:var(--text);}
+  .status-col ul li{font-size:.85rem;color:var(--text-dim);padding:5px 0;display:flex;gap:8px;align-items:flex-start;}
+  .status-col ul li .ic{flex-shrink:0;}
+  .status-col.done .ic{color:var(--cyan);}
+  .status-col.wip .ic{color:var(--amber);}
+  .tech-row{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:30px;}
+  .tech-tag{font-family:var(--mono);font-size:.74rem;border:1px solid var(--line);padding:5px 11px;border-radius:99px;color:var(--text-dim);}
+  .founder-link{
+    font-family:var(--mono);font-size:.88rem;color:var(--amber);border-bottom:1px solid rgba(255,182,39,.4);
+    padding-bottom:3px;display:inline-flex;align-items:center;gap:6px;transition:.2s;
+  }
+  .founder-link:hover{gap:10px;}
+
+  /* ===== PROJECTS ===== */
+  .proj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+  .proj-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:24px;display:flex;flex-direction:column;height:100%;transition:.25s;
+  }
+  .proj-card:hover{border-color:var(--violet);transform:translateY(-4px);}
+  .proj-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+  .lang-dot{width:9px;height:9px;border-radius:50%;background:var(--java);flex-shrink:0;}
+  .proj-repo{font-family:var(--mono);font-size:.7rem;color:var(--text-dim);}
+  .proj-title{font-family:var(--display);font-size:1.08rem;font-weight:600;margin:8px 0 10px;}
+  .proj-desc{color:var(--text-dim);font-size:.88rem;flex-grow:1;margin-bottom:16px;}
+  .proj-foot{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:.72rem;}
+  .proj-link{color:var(--cyan);}
+  .commits{color:var(--text-dim);}
+
+  /* ===== CERTIFICATIONS ===== */
+  .cert-stats{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:36px;}
+  .cert-columns{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+  .cert-issuer-col{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);padding:26px;}
+  .issuer-head{font-family:var(--display);font-weight:700;font-size:1.1rem;color:#ff2e87;margin-bottom:18px;letter-spacing:.02em;}
+  .cert-list li{display:flex;gap:10px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line);}
+  .cert-list li:first-child{border-top:none;padding-top:0;}
+  .cert-list .arrow{color:var(--cyan);flex-shrink:0;margin-top:2px;}
+  .cert-list strong{display:block;font-size:.92rem;font-weight:600;color:var(--text);margin-bottom:3px;}
+  .cert-sub{font-family:var(--mono);font-size:.72rem;color:var(--text-dim);}
+
+  /* ===== CONTACT ===== */
+  .contact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  .contact-card{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    padding:22px;transition:.25s;display:flex;flex-direction:column;gap:10px;
+  }
+  .contact-card:hover{border-color:var(--cyan);}
+  .contact-label{font-family:var(--mono);font-size:.75rem;color:var(--text-dim);}
+  .contact-value{font-size:.92rem;word-break:break-word;}
+
+  /* ===== FOOTER ===== */
+  footer{padding:50px 0 40px;border-top:1px solid var(--line);margin-top:60px;}
+  .footer-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;font-family:var(--mono);font-size:.78rem;color:var(--text-dim);}
+  .back-top{color:var(--text-dim);}
+  .back-top:hover{color:var(--cyan);}
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width:1100px){
+    .rail{display:none;}
+    .progress-bar{display:block;}
+  }
+  @media (max-width:900px){
+    .hero{grid-template-columns:1fr;min-height:auto;gap:40px;}
+    .skills-grid{grid-template-columns:repeat(2,1fr);}
+    .proj-grid{grid-template-columns:1fr;}
+    .contact-grid{grid-template-columns:repeat(2,1fr);}
+    .feature-grid{grid-template-columns:1fr;}
+    .nav-links{display:none;}
+    .nav-burger{display:flex;}
+  }
+  @media (max-width:700px){
+    .cert-columns{grid-template-columns:1fr;}
+  }
+  @media (max-width:560px){
+    section{padding:100px 0 40px;}
+    .skills-grid{grid-template-columns:1fr;}
+    .contact-grid{grid-template-columns:1fr;}
+    .founder-card{padding:28px;}
+    .stat-row{flex-direction:column;}
+    .status-row{grid-template-columns:1fr;}
+    .lang-switch{order:2;}
+  }
+
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none !important;transition:none !important;}
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<canvas id="bg-canvas"></canvas>
+<div class="progress-bar" id="progressBar"></div>
+
+<div class="browser-chrome">
+  <span class="bc-dot r"></span><span class="bc-dot y"></span><span class="bc-dot g"></span>
+  <div class="bc-url">🔒 caikera7.github.io</div>
+</div>
+
+<nav class="topnav">
+  <div class="nav-inner">
+    <div class="brand"><span class="tag">{</span>Cayque Nunes<span class="tag">}</span></div>
+    <div class="build-pill"><span class="dot"></span><span class="i18n" data-pt="build: sucesso" data-en="build: passing">build: sucesso</span></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about" data-nav="about" class="i18n" data-pt="Sobre" data-en="About">Sobre</a></li>
+      <li><a href="#journey" data-nav="journey" class="i18n" data-pt="Trajetória" data-en="Journey">Trajetória</a></li>
+      <li><a href="#stack" data-nav="stack">Stack</a></li>
+      <li><a href="#projects" data-nav="projects" class="i18n" data-pt="Projetos" data-en="Projects">Projetos</a></li>
+      <li><a href="#contact" data-nav="contact" class="i18n" data-pt="Contato" data-en="Contact">Contato</a></li>
+    </ul>
+    <div class="lang-switch">
+      <button id="btn-pt" class="active">PT</button>
+      <button id="btn-en">EN</button>
+    </div>
+    <button class="nav-burger" id="burger" aria-label="menu"><span></span><span></span><span></span></button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#about" class="i18n" data-pt="Sobre" data-en="About">Sobre</a>
+    <a href="#journey" class="i18n" data-pt="Trajetória" data-en="Journey">Trajetória</a>
+    <a href="#stack">Stack</a>
+    <a href="#founder">PetPredictCore</a>
+    <a href="#projects" class="i18n" data-pt="Projetos" data-en="Projects">Projetos</a>
+    <a href="#certifications" class="i18n" data-pt="Certificações" data-en="Certifications">Certificações</a>
+    <a href="#contact" class="i18n" data-pt="Contato" data-en="Contact">Contato</a>
+  </div>
+</nav>
+
+<nav class="rail" id="rail">
+  <a href="#hero" data-rail="hero"><span>hero</span></a>
+  <a href="#about" data-rail="about"><span>about</span></a>
+  <a href="#journey" data-rail="journey"><span>journey</span></a>
+  <a href="#stack" data-rail="stack"><span>stack</span></a>
+  <a href="#founder" data-rail="founder"><span>founder</span></a>
+  <a href="#projects" data-rail="projects"><span>projects</span></a>
+  <a href="#certifications" data-rail="certifications"><span>certs</span></a>
+  <a href="#contact" data-rail="contact"><span>contact</span></a>
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="container hero">
+      <div>
+        <div class="hero-eyebrow"><span class="cursor"></span><span class="i18n" data-pt="status: construindo em público" data-en="status: building in public">status: construindo em público</span></div>
+        <h1 class="name">Cayque Nunes</h1>
+        <div class="role-line">Backend Developer · Java &amp; Spring Boot</div>
+        <p class="tagline i18n" data-pt="Desde criança sou fascinado por tecnologia — hoje transformo essa curiosidade em código. Saí do balcão de um petshop para o teclado, construindo o sistema que eu mesmo precisava ter em mãos todos os dias." data-en="I've been fascinated by technology since I was a kid — today I turn that curiosity into code. I went from a petshop counter to the keyboard, building the system I wish I'd had in my hands every single day.">Desde criança sou fascinado por tecnologia — hoje transformo essa curiosidade em código. Saí do balcão de um petshop para o teclado, construindo o sistema que eu mesmo precisava ter em mãos todos os dias.</p>
+        <div class="cta-row">
+          <a href="#projects" class="btn btn-primary i18n" data-pt="Ver projetos →" data-en="View projects →">Ver projetos →</a>
+          <a href="#contact" class="btn btn-ghost i18n" data-pt="Falar comigo" data-en="Get in touch">Falar comigo</a>
+        </div>
+        <div class="stat-row">
+          <div class="stat-chip">
+            <div class="num">01</div>
+            <div class="lbl i18n" data-pt="SaaS em construção" data-en="SaaS in the making">SaaS em construção</div>
+            <div class="sub">PetPredictCore</div>
+          </div>
+          <div class="stat-chip">
+            <div class="num" id="statRepos" data-target="4">00</div>
+            <div class="lbl i18n" data-pt="Repositórios públicos" data-en="Public repositories">Repositórios públicos</div>
+            <div class="sub">GitHub</div>
+          </div>
+          <div class="stat-chip">
+            <div class="num">ADS</div>
+            <div class="lbl i18n" data-pt="Análise e Desenv. de Sistemas" data-en="Computer Systems Analysis">Análise e Desenv. de Sistemas</div>
+            <div class="sub i18n" data-pt="Cruzeiro do Sul · em andamento" data-en="Cruzeiro do Sul · ongoing">Cruzeiro do Sul · em andamento</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="term-bar">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="fname">Cayque.java</span>
+        </div>
+        <div class="term-body">
+          <div id="typed-code"></div>
+          <div class="term-log" id="termLog">
+            <div style="animation-delay:.1s">$ mvn clean install</div>
+            <div style="animation-delay:.3s">[INFO] <span class="i18n" data-pt="formação ............ ADS · Cruzeiro do Sul" data-en="education ........... CS Analysis · Cruzeiro do Sul">formação ............ ADS · Cruzeiro do Sul</span></div>
+            <div style="animation-delay:.5s">[INFO] founder ............. PetPredictCore</div>
+            <div style="animation-delay:.7s">[INFO] stack ............... Java · Spring · PostgreSQL</div>
+            <div style="animation-delay:.9s" class="ok">BUILD SUCCESS ✓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <span class="eyebrow">// <span class="i18n" data-pt="sobre mim" data-en="about me">sobre mim</span></span>
+      <h2 class="title reveal i18n" data-pt="Quem escreve esse código" data-en="Who's writing this code">Quem escreve esse código</h2>
+      <p class="section-sub reveal i18n" data-pt="Um README rápido, pra você me conhecer melhor." data-en="A quick README, so you can get to know me.">Um README rápido, pra você me conhecer melhor.</p>
+
+      <div class="terminal readme-wrap reveal">
+        <div class="term-bar">
+          <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+          <span class="fname">README.md</span>
+        </div>
+        <div class="term-body">
+          <div class="md-h1">Cayque Nunes</div>
+          <div class="md-tagline i18n" data-pt="Backend Developer · Founder · eternamente curioso" data-en="Backend Developer · Founder · forever curious">Backend Developer · Founder · eternamente curioso</div>
+
+          <div class="badge-row">
+            <span class="md-badge">📍 São Paulo, BR</span>
+            <span class="md-badge">🎓 ADS · Cruzeiro do Sul</span>
+            <span class="md-badge">🚀 Founder @ PetPredictCore</span>
+            <span class="md-badge">☕ Java &amp; Spring</span>
+          </div>
+
+          <div class="md-h2">## 💭 <span class="i18n" data-pt="Sobre mim" data-en="About me">Sobre mim</span></div>
+          <p class="about-text i18n" data-pt="Sou fascinado por tecnologia desde criança — sempre fui aquele que desmontava qualquer coisa só pra entender como funcionava por dentro. Hoje sou desenvolvedor backend, com foco no ecossistema Java e Spring, e estudo Análise e Desenvolvimento de Sistemas na Cruzeiro do Sul. Atualmente dedico boa parte do meu tempo a construir o PetPredictCore, minha própria plataforma de gestão para petshops, do zero — da modelagem do banco de dados à arquitetura da aplicação. Acredito que o melhor código nasce de problema real, não de teoria, e é assim que eu desenvolvo: pondo a mão na massa, testando, errando e aprendendo em público." data-en="I've been fascinated by technology since I was a kid — always the one taking things apart just to see how they worked. Today I'm a backend developer focused on the Java and Spring ecosystem, and I study Computer Systems Analysis at Cruzeiro do Sul. I currently spend much of my time building PetPredictCore, my own petshop management platform, from the ground up — from database modeling to application architecture. I believe the best code comes from real problems, not theory, and that's how I work: hands-on, testing, failing and learning out loud.">Sou fascinado por tecnologia desde criança — sempre fui aquele que desmontava qualquer coisa só pra entender como funcionava por dentro. Hoje sou desenvolvedor backend, com foco no ecossistema Java e Spring, e estudo Análise e Desenvolvimento de Sistemas na Cruzeiro do Sul. Atualmente dedico boa parte do meu tempo a construir o PetPredictCore, minha própria plataforma de gestão para petshops, do zero — da modelagem do banco de dados à arquitetura da aplicação. Acredito que o melhor código nasce de problema real, não de teoria, e é assim que eu desenvolvo: pondo a mão na massa, testando, errando e aprendendo em público.</p>
+
+          <div class="md-h2">## ⚡ <span class="i18n" data-pt="Agora" data-en="Now">Agora</span></div>
+          <ul class="now-list">
+            <li>🛠️ <span class="i18n" data-pt="Construindo o PetPredictCore" data-en="Building PetPredictCore">Construindo o PetPredictCore</span></li>
+            <li>📚 <span class="i18n" data-pt="Estudando ADS na Cruzeiro do Sul" data-en="Studying CS Analysis at Cruzeiro do Sul">Estudando ADS na Cruzeiro do Sul</span></li>
+            <li>🌐 <span class="i18n" data-pt="Compartilhando o processo em Build in Public" data-en="Sharing the process through Build in Public">Compartilhando o processo em Build in Public</span></li>
+            <li>💼 <span class="i18n" data-pt="Aberto a oportunidades como Backend Developer" data-en="Open to Backend Developer roles">Aberto a oportunidades como Backend Developer</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- JOURNEY -->
+  <section id="journey">
+    <div class="container">
+      <span class="eyebrow">// <span class="i18n" data-pt="trajetória" data-en="journey">trajetória</span></span>
+      <h2 class="title reveal i18n" data-pt="Do balcão do petshop ao teclado" data-en="From the petshop counter to the keyboard">Do balcão do petshop ao teclado</h2>
+      <p class="section-sub reveal i18n" data-pt="Quatro capítulos, na ordem em que aconteceram." data-en="Four chapters, in the order they happened.">Quatro capítulos, na ordem em que aconteceram.</p>
+
+      <div class="timeline">
+        <div class="tl-item reveal" data-idx="01">
+          <span class="tl-tag">role.attendant</span>
+          <div class="tl-title i18n" data-pt="Atendente — Rações Renata PetShop" data-en="Attendant — Rações Renata PetShop">Atendente — Rações Renata PetShop</div>
+          <p class="tl-desc i18n" data-pt="No dia a dia real de um petshop, vi de perto o caos: agenda em caderno, financeiro no controle manual, estoque sem previsibilidade. Foi ali que a ideia do PetPredictCore nasceu — não numa sala de aula, no balcão." data-en="On the daily floor of a real petshop, I saw the chaos up close: a paper schedule, manual financial control, unpredictable stock. That's where the idea for PetPredictCore was born — not in a classroom, at the counter.">No dia a dia real de um petshop, vi de perto o caos: agenda em caderno, financeiro no controle manual, estoque sem previsibilidade. Foi ali que a ideia do PetPredictCore nasceu — não numa sala de aula, no balcão.</p>
+        </div>
+        <div class="tl-item reveal" data-idx="02">
+          <span class="tl-tag">education.ads</span>
+          <div class="tl-title i18n" data-pt="Análise e Desenvolvimento de Sistemas — Cruzeiro do Sul" data-en="Computer Systems Analysis — Cruzeiro do Sul University">Análise e Desenvolvimento de Sistemas — Cruzeiro do Sul</div>
+          <p class="tl-desc i18n" data-pt="Formação técnica em andamento, com bom desempenho acadêmico, aplicando na prática Java, banco de dados, lógica e arquitetura de software desde os primeiros semestres." data-en="Ongoing technical degree, with strong academic performance, applying Java, databases, logic and software architecture in practice since the early semesters.">Formação técnica em andamento, com bom desempenho acadêmico, aplicando na prática Java, banco de dados, lógica e arquitetura de software desde os primeiros semestres.</p>
+        </div>
+        <div class="tl-item reveal" data-idx="03">
+          <span class="tl-tag">founder.petpredictcore</span>
+          <div class="tl-title i18n" data-pt="Founder — PetPredictCore" data-en="Founder — PetPredictCore">Founder — PetPredictCore</div>
+          <p class="tl-desc i18n" data-pt="Transformei a dor real do petshop em produto: uma plataforma de gestão com agendamento, controle financeiro, estoque e automação — pensada por quem já ficou do outro lado do balcão." data-en="I turned the petshop's real pain point into a product: a management platform with scheduling, financial control, inventory and automation — designed by someone who's worked the other side of the counter.">Transformei a dor real do petshop em produto: uma plataforma de gestão com agendamento, controle financeiro, estoque e automação — pensada por quem já ficou do outro lado do balcão.</p>
+        </div>
+        <div class="tl-item reveal" data-idx="04">
+          <span class="tl-tag">practice.build_in_public</span>
+          <div class="tl-title">Build in Public</div>
+          <p class="tl-desc i18n" data-pt="Compartilho o processo de construir um SaaS do zero — código, decisões e aprendizados em aberto, com a comunidade dev e empreendedora brasileira." data-en="I share the process of building a SaaS from scratch — code, decisions and lessons out in the open, with Brazil's dev and founder community.">Compartilho o processo de construir um SaaS do zero — código, decisões e aprendizados em aberto, com a comunidade dev e empreendedora brasileira.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STACK -->
+  <section id="stack">
+    <div class="container">
+      <span class="eyebrow">// stack</span>
+      <h2 class="title reveal i18n" data-pt="Ferramentas que uso pra construir" data-en="Tools I build with">Ferramentas que uso pra construir</h2>
+      <p class="section-sub reveal i18n" data-pt="A base técnica por trás de tudo que aparece nesta página." data-en="The technical foundation behind everything on this page.">A base técnica por trás de tudo que aparece nesta página.</p>
+
+      <div class="skills-grid">
+
+        <div class="skill-category reveal">
+          <div class="cat-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="6" rx="1"/><rect x="4" y="13" width="16" height="6" rx="1"/><circle cx="7" cy="7" r=".6" fill="currentColor" stroke="none"/><circle cx="7" cy="16" r=".6" fill="currentColor" stroke="none"/></svg>
+            <h3>Backend</h3>
+          </div>
+          <div class="skill-icons">
+            <div class="skill-item">
+              <div class="skill-badge" style="background:rgba(240,160,32,.16);border-color:rgba(240,160,32,.4);color:#f0a020">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 9h11v6.5A4.5 4.5 0 0 1 11.5 20h-2A4.5 4.5 0 0 1 5 15.5V9Z"/><path d="M16 10.5h1.6a2.1 2.1 0 1 1 0 4.2H16"/><path d="M8.5 3.2c-.6 1 .5 1.4-.2 2.6M12 3.2c-.6 1 .5 1.4-.2 2.6"/></svg>
+              </div>
+              <span>Java 21</span>
+            </div>
+            <div class="skill-item">
+              <div class="skill-badge" style="background:rgba(109,179,63,.16);border-color:rgba(109,179,63,.4);color:#6db33f">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4c.6 8.8-6.2 16-15 15.6C4.4 11 11.4 4.2 20 4Z"/><path d="M5.2 19.4c3-3.4 5-6.6 11.8-13"/></svg>
+              </div>
+              <span>Spring Boot</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-category reveal">
+          <div class="cat-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="12" rx="1.4"/><path d="M9 20h6M12 16.5V20"/></svg>
+            <h3 class="i18n" data-pt="Frontend" data-en="Frontend">Frontend</h3>
+          </div>
+          <div class="skill-icons">
+            <div class="skill-item">
+              <div class="skill-badge" style="background:rgba(240,219,79,.18);border-color:rgba(240,219,79,.45);color:#f0db4f">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4.5c-1.8 0-2.7.9-2.7 2.7v1.6c0 1.6-.6 2.2-2.1 2.2v2c1.5 0 2.1.6 2.1 2.2v1.6c0 1.8.9 2.7 2.7 2.7"/><path d="M15 4.5c1.8 0 2.7.9 2.7 2.7v1.6c0 1.6.6 2.2 2.1 2.2v2c-1.5 0-2.1.6-2.1 2.2v1.6c0 1.8-.9 2.7-2.7 2.7"/></svg>
+              </div>
+              <span>JavaScript</span>
+            </div>
+            <div class="skill-item">
+              <div class="skill-badge" style="background:rgba(221,0,49,.16);border-color:rgba(221,0,49,.4);color:#dd0031">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.5 4.5 5.3l1.1 10.4L12 21.5l6.4-5.8 1.1-10.4L12 2.5Z"/><path d="M12 7 8.6 16h1.7l.7-1.8h2L13.7 16h1.7L12 7Zm0 2.8 1 2.6h-2l1-2.6Z"/></svg>
+              </div>
+              <span>Angular</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-category reveal">
+          <div class="cat-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="7" ry="2.7"/><path d="M5 5.5v6.2c0 1.5 3.1 2.7 7 2.7s7-1.2 7-2.7V5.5"/><path d="M5 11.7v6.2c0 1.5 3.1 2.7 7 2.7s7-1.2 7-2.7v-6.2"/></svg>
+            <h3 class="i18n" data-pt="Dados" data-en="Data">Dados</h3>
+          </div>
+          <div class="skill-icons">
+            <div class="skill-item">
+              <div class="skill-badge" style="background:rgba(51,103,145,.2);border-color:rgba(51,103,145,.5);color:#5b9bd5">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="7" ry="2.7"/><path d="M5 5.5v6.2c0 1.5 3.1 2.7 7 2.7s7-1.2 7-2.7V5.5"/><path d="M5 11.7v6.2c0 1.5 3.1 2.7 7 2.7s7-1.2 7-2.7v-6.2"/></svg>
+              </div>
+              <span>PostgreSQL</span>
+            </div>
+            <div class="skill-item">
+              <div class="skill-badge" style="background:rgba(68,121,161,.2);border-color:rgba(68,121,161,.5);color:#4479a1">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="7" ry="2.7"/><path d="M5 5.5v6.2c0 1.5 3.1 2.7 7 2.7s7-1.2 7-2.7V5.5"/><path d="M5 11.7v6.2c0 1.5 3.1 2.7 7 2.7s7-1.2 7-2.7v-6.2"/></svg>
+              </div>
+              <span>MySQL</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-category reveal">
+          <div class="cat-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 17.5a4 4 0 0 1-.6-7.9 5.2 5.2 0 0 1 10-1.7A4.4 4.4 0 0 1 17.2 17"/><path d="M7 17.5h10.2"/></svg>
+            <h3 class="i18n" data-pt="Cloud &amp; DevOps" data-en="Cloud &amp; DevOps">Cloud &amp; DevOps</h3>
+          </div>
+          <div class="skill-icons">
+            <div class="skill-item">
+              <div class="skill-badge" style="background:rgba(255,153,0,.16);border-color:rgba(255,153,0,.4);color:#ff9900">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 17.5a4 4 0 0 1-.6-7.9 5.2 5.2 0 0 1 10-1.7A4.4 4.4 0 0 1 17.2 17"/><path d="M7 17.5h10.2"/></svg>
+              </div>
+              <span>AWS</span>
+            </div>
+            <div class="skill-item">
+              <div class="skill-badge" style="background:rgba(36,150,237,.16);border-color:rgba(36,150,237,.4);color:#2496ed">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="4" height="4" rx=".6"/><rect x="8" y="11" width="4" height="4" rx=".6"/><rect x="13" y="11" width="4" height="4" rx=".6"/><rect x="8" y="6.3" width="4" height="4" rx=".6"/><path d="M2.5 14.5c1.3 4 5.2 6.8 9.5 6.8 4.6 0 8.6-3.1 9.7-7.5-1-.7-2-.6-3 0-1.6 1-3.4 1-3.4 1H6s-1.7 0-3.3-1c-.7-.4-1.3-.3-2.2 0Z"/></svg>
+              </div>
+              <span>Docker</span>
+            </div>
+            <div class="skill-item">
+              <div class="skill-badge" style="background:rgba(199,26,54,.16);border-color:rgba(199,26,54,.4);color:#c71a36">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2.8 20.5 7.5v9L12 21.2 3.5 16.5v-9L12 2.8Z"/><path d="M12 12 20.5 7.5"/><path d="M12 12 3.5 7.5"/><path d="M12 12v9.2"/></svg>
+              </div>
+              <span>Maven</span>
+            </div>
+            <div class="skill-item">
+              <div class="skill-badge" style="background:rgba(240,80,51,.16);border-color:rgba(240,80,51,.4);color:#f05033">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="2.1"/><circle cx="6" cy="18" r="2.1"/><circle cx="18" cy="9" r="2.1"/><path d="M6 8.1V18"/><path d="M18 11.1v.4c0 2.8-2.2 4.5-5 4.5H8.6"/></svg>
+              </div>
+              <span>Git</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="skill-category reveal">
+          <div class="cat-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3.5 7.5 12 12l8.5-4.5L12 3Z"/><path d="M3.5 12 12 16.5l8.5-4.5"/><path d="M3.5 16.3 12 20.8l8.5-4.5"/></svg>
+            <h3 class="i18n" data-pt="Arquitetura" data-en="Architecture">Arquitetura</h3>
+          </div>
+          <div class="skill-icons">
+            <div class="skill-item">
+              <div class="skill-badge" style="background:rgba(139,92,246,.16);border-color:rgba(139,92,246,.4);color:#8b5cf6">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 3.5 7.5 12 12l8.5-4.5L12 3Z"/><path d="M3.5 12 12 16.5l8.5-4.5"/><path d="M3.5 16.3 12 20.8l8.5-4.5"/></svg>
+              </div>
+              <span>Clean Arch.</span>
+            </div>
+            <div class="skill-item">
+              <div class="skill-badge" style="background:rgba(45,226,201,.16);border-color:rgba(45,226,201,.4);color:#2de2c9">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 5.5 5.8v6c0 4.6 2.9 7.6 6.5 9 3.6-1.4 6.5-4.4 6.5-9v-6L12 3Z"/><path d="m9 12.2 2.1 2 3.4-3.8"/></svg>
+              </div>
+              <span>SOLID</span>
+            </div>
+            <div class="skill-item">
+              <div class="skill-badge" style="background:rgba(255,182,39,.16);border-color:rgba(255,182,39,.4);color:#ffb627">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2.5v4M15 2.5v4"/><path d="M6.5 6.5h11v3.8a5.5 5.5 0 0 1-11 0V6.5Z"/><path d="M12 14.8v6.7"/></svg>
+              </div>
+              <span class="i18n" data-pt="Injeção Dep." data-en="Dep. Injection">Injeção Dep.</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOUNDER PROJECT -->
+  <section id="founder">
+    <div class="container">
+      <div class="founder-card reveal">
+        <div class="founder-top">
+          <span class="founder-badge">★ <span class="i18n" data-pt="Projeto Founder" data-en="Founder Project">Projeto Founder</span></span>
+          <span class="status-pill"><span class="dot"></span><span class="i18n" data-pt="em construção" data-en="in progress">em construção</span></span>
+        </div>
+        <h3>PetPredictCore</h3>
+        <span class="founder-subtitle i18n" data-pt="Sistema de gestão para petshops" data-en="Petshop management system">Sistema de gestão para petshops</span>
+
+        <p class="desc i18n" data-pt="Uma plataforma completa de gestão para petshops, desenvolvida para resolver os principais desafios operacionais do setor — agenda, financeiro e estoque centralizados em um só lugar. Pensada para donos e gestores de petshops independentes que ainda dependem de planilhas, cadernos e WhatsApp, sem automação ou padronização de processos, o PetPredictCore substitui o improviso por decisões baseadas em dados." data-en="A complete petshop management platform, built to solve the sector's core operational challenges — scheduling, finances and inventory centralized in one place. Designed for owners and managers of independent petshops who still rely on spreadsheets, notebooks and WhatsApp, without automation or standardized processes, PetPredictCore replaces guesswork with data-driven decisions.">Uma plataforma completa de gestão para petshops, desenvolvida para resolver os principais desafios operacionais do setor — agenda, financeiro e estoque centralizados em um só lugar. Pensada para donos e gestores de petshops independentes que ainda dependem de planilhas, cadernos e WhatsApp, sem automação ou padronização de processos, o PetPredictCore substitui o improviso por decisões baseadas em dados.</p>
+
+        <p class="founder-extra i18n" data-pt='O sistema é estruturado em módulos: agendamento, controle financeiro, gestão de estoque e automação de processos, além de diversas outras implementações pensadas para o dia a dia do petshop. Um dos destaques é o módulo <strong>Falteiro</strong>: todo petshop perde dinheiro com clientes que marcam horário e simplesmente não aparecem, deixando a agenda vazia e o caixa no vermelho sem aviso. O Falteiro identifica esse padrão automaticamente, aponta os clientes recorrentes na falta e dá ao petshop subsídio para agir — com lembretes, confirmação prévia ou políticas de reagendamento. No fim, o PetPredictCore não é só um sistema: é a prova de que quem viveu o problema de perto também pode construir a solução, linha de código por linha de código.' data-en='The system is structured in modules: scheduling, financial control, inventory management and process automation, plus several other features built for the petshop's daily routine. One of the highlights is the <strong>Falteiro</strong> module: every petshop loses money to clients who book a slot and simply don't show up, leaving the schedule empty and the cash flow in the red with no warning. Falteiro automatically detects this pattern, flags repeat no-show clients, and gives the petshop the data to act — through reminders, confirmation requests or a rebooking policy. In the end, PetPredictCore isn't just a system: it's proof that whoever lived the problem up close can also build the solution, one line of code at a time.'>O sistema é estruturado em módulos: agendamento, controle financeiro, gestão de estoque e automação de processos, além de diversas outras implementações pensadas para o dia a dia do petshop. Um dos destaques é o módulo <strong>Falteiro</strong>: todo petshop perde dinheiro com clientes que marcam horário e simplesmente não aparecem, deixando a agenda vazia e o caixa no vermelho sem aviso. O Falteiro identifica esse padrão automaticamente, aponta os clientes recorrentes na falta e dá ao petshop subsídio para agir — com lembretes, confirmação prévia ou políticas de reagendamento. No fim, o PetPredictCore não é só um sistema: é a prova de que quem viveu o problema de perto também pode construir a solução, linha de código por linha de código.</p>
+
+        <ul class="feature-grid">
+          <li><span class="ico">▸</span><span class="i18n" data-pt="Agendamento inteligente" data-en="Smart scheduling">Agendamento inteligente</span></li>
+          <li><span class="ico">▸</span><span class="i18n" data-pt="Controle financeiro" data-en="Financial control">Controle financeiro</span></li>
+          <li><span class="ico">▸</span><span class="i18n" data-pt="Gestão de estoque" data-en="Inventory management">Gestão de estoque</span></li>
+          <li><span class="ico">▸</span><span class="i18n" data-pt="Módulo Falteiro" data-en="Falteiro module">Módulo Falteiro</span></li>
+        </ul>
+
+        <div class="status-row">
+          <div class="status-col done">
+            <h4>✅ <span class="i18n" data-pt="Já construído" data-en="Already built">Já construído</span></h4>
+            <ul>
+              <li><span class="ic">▸</span><span class="i18n" data-pt="Modelagem do banco de dados (clientes, pets, serviços, estoque)" data-en="Database modeling (clients, pets, services, inventory)">Modelagem do banco de dados (clientes, pets, serviços, estoque)</span></li>
+              <li><span class="ic">▸</span><span class="i18n" data-pt="Arquitetura backend em Java 21 + Spring Boot, com Clean Architecture" data-en="Backend architecture in Java 21 + Spring Boot, following Clean Architecture">Arquitetura backend em Java 21 + Spring Boot, com Clean Architecture</span></li>
+              <li><span class="ic">▸</span><span class="i18n" data-pt="Módulo de Controle de Estoque" data-en="Inventory Control module">Módulo de Controle de Estoque</span></li>
+              <li><span class="ic">▸</span><span class="i18n" data-pt="Repositório de pesquisa e prototipagem" data-en="Research & prototyping repo">Repositório de pesquisa e prototipagem</span></li>
+            </ul>
+          </div>
+          <div class="status-col wip">
+            <h4>🔧 <span class="i18n" data-pt="Em desenvolvimento" data-en="In progress">Em desenvolvimento</span></h4>
+            <ul>
+              <li><span class="ic">▸</span><span class="i18n" data-pt="Módulo de Agendamento completo" data-en="Full Scheduling module">Módulo de Agendamento completo</span></li>
+              <li><span class="ic">▸</span><span class="i18n" data-pt="Controle Financeiro automatizado" data-en="Automated Financial control">Controle Financeiro automatizado</span></li>
+              <li><span class="ic">▸</span><span class="i18n" data-pt="Módulo Falteiro (clientes que faltam)" data-en="Falteiro module (no-show tracking)">Módulo Falteiro (clientes que faltam)</span></li>
+              <li><span class="ic">▸</span><span class="i18n" data-pt="Automação de processos (lembretes, notificações)" data-en="Process automation (reminders, notifications)">Automação de processos (lembretes, notificações)</span></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="tech-row">
+          <span class="tech-tag">Java 21</span>
+          <span class="tech-tag">Spring Boot 3.2</span>
+          <span class="tech-tag">PostgreSQL</span>
+          <span class="tech-tag">Docker</span>
+          <span class="tech-tag">Maven</span>
+          <span class="tech-tag">Clean Architecture</span>
+        </div>
+
+        <a class="founder-link" href="https://github.com/Caikera7/PetPredictCore-pesquisa" target="_blank" rel="noopener">
+          <span class="i18n" data-pt="Ver repositório de pesquisa" data-en="View research repo">Ver repositório de pesquisa</span> →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="container">
+      <span class="eyebrow">// <span class="i18n" data-pt="projetos" data-en="projects">projetos</span></span>
+      <h2 class="title reveal i18n" data-pt="Outros projetos no GitHub" data-en="Other projects on GitHub">Outros projetos no GitHub</h2>
+      <p class="section-sub reveal i18n" data-pt="Estudos práticos que sustentam a base técnica por trás do PetPredictCore." data-en="Hands-on studies that back the technical foundation behind PetPredictCore.">Estudos práticos que sustentam a base técnica por trás do PetPredictCore.</p>
+
+      <div class="proj-grid">
+        <div class="proj-card reveal">
+          <div class="proj-head"><span class="lang-dot"></span><span class="proj-repo">Corrida-java</span></div>
+          <div class="proj-title i18n" data-pt="Estudos em Java Backend" data-en="Java Backend Studies">Estudos em Java Backend</div>
+          <p class="proj-desc i18n" data-pt="API REST com Spring Boot, Spring Data JPA e Hibernate — CRUD, DTOs, validação e tratamento de exceções, com PostgreSQL e H2." data-en="REST API with Spring Boot, Spring Data JPA and Hibernate — CRUD, DTOs, validation and exception handling, with PostgreSQL and H2.">API REST com Spring Boot, Spring Data JPA e Hibernate — CRUD, DTOs, validação e tratamento de exceções, com PostgreSQL e H2.</p>
+          <div class="proj-foot">
+            <a class="proj-link" href="https://github.com/Caikera7/Corrida-java" target="_blank" rel="noopener">GitHub →</a>
+            <span class="commits">47 commits</span>
+          </div>
+        </div>
+
+        <div class="proj-card reveal">
+          <div class="proj-head"><span class="lang-dot"></span><span class="proj-repo">FlowCore_Architecture</span></div>
+          <div class="proj-title">FlowCore Architecture</div>
+          <p class="proj-desc i18n" data-pt="Estudo aplicado de Clean Architecture e SOLID — sistema organizado em camadas (domain, application, infrastructure, interfaces) pra proteger as regras de negócio da infraestrutura." data-en="Applied study of Clean Architecture and SOLID — a system organized in layers (domain, application, infrastructure, interfaces) to protect business rules from infrastructure.">Estudo aplicado de Clean Architecture e SOLID — sistema organizado em camadas (domain, application, infrastructure, interfaces) pra proteger as regras de negócio da infraestrutura.</p>
+          <div class="proj-foot">
+            <a class="proj-link" href="https://github.com/Caikera7/Caikera7-FlowCore_Architecture" target="_blank" rel="noopener">GitHub →</a>
+            <span class="commits i18n" data-pt="arquitetura" data-en="architecture">arquitetura</span>
+          </div>
+        </div>
+
+        <div class="proj-card reveal">
+          <div class="proj-head"><span class="lang-dot"></span><span class="proj-repo">bank-account-exception-system</span></div>
+          <div class="proj-title">Bank Account Exception System</div>
+          <p class="proj-desc i18n" data-pt="Sistema de conta bancária focado em tratamento de exceções em Java: exceções customizadas, try/catch/finally e relançamento." data-en="Bank account system focused on Java exception handling: custom exceptions, try/catch/finally and re-throwing.">Sistema de conta bancária focado em tratamento de exceções em Java: exceções customizadas, try/catch/finally e relançamento.</p>
+          <div class="proj-foot">
+            <a class="proj-link" href="https://github.com/Caikera7/bank-account-exception-system" target="_blank" rel="noopener">GitHub →</a>
+            <span class="commits">Java 21</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTIFICATIONS -->
+  <section id="certifications">
+    <div class="container">
+      <span class="eyebrow">// <span class="i18n" data-pt="certificações" data-en="certifications">certificações</span></span>
+      <h2 class="title reveal i18n" data-pt="Certificações" data-en="Certifications">Certificações</h2>
+      <p class="section-sub reveal i18n" data-pt="Nano Courses concluídos, organizados por instituição." data-en="Completed Nano Courses, organized by institution.">Nano Courses concluídos, organizados por instituição.</p>
+
+      <div class="cert-stats">
+        <div class="stat-chip reveal">
+          <div class="num">02</div>
+          <div class="lbl i18n" data-pt="Certificações concluídas" data-en="Completed certifications">Certificações concluídas</div>
+        </div>
+        <div class="stat-chip reveal">
+          <div class="num">140h</div>
+          <div class="lbl i18n" data-pt="Carga horária total" data-en="Total certified hours">Carga horária total</div>
+        </div>
+        <div class="stat-chip reveal">
+          <div class="num">01</div>
+          <div class="lbl i18n" data-pt="Instituição certificadora" data-en="Issuing institution">Instituição certificadora</div>
+        </div>
+      </div>
+
+      <div class="cert-columns">
+        <div class="cert-issuer-col reveal">
+          <div class="issuer-head">FIAP</div>
+          <ul class="cert-list">
+            <li>
+              <span class="arrow">→</span>
+              <div>
+                <strong>Java Development</strong>
+                <span class="cert-sub i18n" data-pt="Nano Course · 60h · concluído em 06/04/2026" data-en="Nano Course · 60h · completed on Apr 6, 2026">Nano Course · 60h · concluído em 06/04/2026</span>
+              </div>
+            </li>
+            <li>
+              <span class="arrow">→</span>
+              <div>
+                <strong>Cloud Fundamentals, Administration and Solution Architect</strong>
+                <span class="cert-sub i18n" data-pt="Nano Course · 80h · concluído em 18/03/2026" data-en="Nano Course · 80h · completed on Mar 18, 2026">Nano Course · 80h · concluído em 18/03/2026</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <span class="eyebrow">// <span class="i18n" data-pt="contato" data-en="contact">contato</span></span>
+      <h2 class="title reveal i18n" data-pt="Vamos construir algo?" data-en="Let's build something?">Vamos construir algo?</h2>
+      <p class="section-sub reveal i18n" data-pt="Aberto a oportunidades como desenvolvedor backend e conversas sobre SaaS, produto e o universo dev/founder." data-en="Open to backend developer roles and conversations about SaaS, product and the dev/founder world.">Aberto a oportunidades como desenvolvedor backend e conversas sobre SaaS, produto e o universo dev/founder.</p>
+
+      <div class="contact-grid">
+        <a class="contact-card reveal" href="mailto:cayquenuneslealmarquescordeiro@gmail.com">
+          <span class="contact-label">Email</span>
+          <span class="contact-value">cayquenuneslealmarquescordeiro@gmail.com</span>
+        </a>
+        <a class="contact-card reveal" href="https://wa.me/5511916976135" target="_blank" rel="noopener">
+          <span class="contact-label">WhatsApp</span>
+          <span class="contact-value">+55 11 91697-6135</span>
+        </a>
+        <a class="contact-card reveal" href="https://github.com/Caikera7" target="_blank" rel="noopener">
+          <span class="contact-label">GitHub</span>
+          <span class="contact-value">github.com/Caikera7</span>
+        </a>
+        <a class="contact-card reveal" href="https://www.linkedin.com/in/cayque-nunes-0a4a352b4/" target="_blank" rel="noopener">
+          <span class="contact-label">LinkedIn</span>
+          <span class="contact-value">/cayque-nunes</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="container footer-row">
+    <span class="i18n" data-pt="// feito linha por linha, sem template genérico · Cayque Nunes 2026" data-en="// built line by line, no generic template · Cayque Nunes 2026">// feito linha por linha, sem template genérico · Cayque Nunes 2026</span>
+    <a href="#hero" class="back-top i18n" data-pt="↑ topo" data-en="↑ top">↑ topo</a>
+  </div>
+</footer>
+
+<script>
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// ===================== LANGUAGE =====================
+function setLang(lang){
+  document.documentElement.setAttribute('lang', lang);
+  document.querySelectorAll('.i18n').forEach(el=>{
+    const val = el.getAttribute('data-'+lang);
+    if(val !== null) el.textContent = val;
+  });
+  document.querySelectorAll('.i18n-html').forEach(el=>{
+    const val = el.getAttribute('data-'+lang+'-html');
+    if(val !== null) el.innerHTML = val;
+  });
+  document.getElementById('btn-pt').classList.toggle('active', lang==='pt');
+  document.getElementById('btn-en').classList.toggle('active', lang==='en');
+}
+document.getElementById('btn-pt').addEventListener('click', ()=>setLang('pt'));
+document.getElementById('btn-en').addEventListener('click', ()=>setLang('en'));
+
+// ===================== MOBILE MENU =====================
+const burger = document.getElementById('burger');
+const mobileMenu = document.getElementById('mobileMenu');
+burger.addEventListener('click', ()=> mobileMenu.classList.toggle('open'));
+mobileMenu.querySelectorAll('a').forEach(a=> a.addEventListener('click', ()=> mobileMenu.classList.remove('open')));
+
+// ===================== SCROLLSPY =====================
+const sections = document.querySelectorAll('main section');
+const navLinks = document.querySelectorAll('.nav-links a, .mobile-menu a');
+const railLinks = document.querySelectorAll('.rail a');
+
+const spyObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting){
+      const id = entry.target.id;
+      navLinks.forEach(l=> l.classList.toggle('active', l.getAttribute('href')==='#'+id));
+      railLinks.forEach(l=> l.classList.toggle('active', l.dataset.rail===id));
+    }
+  });
+}, {rootMargin:'-45% 0px -45% 0px'});
+sections.forEach(s=> spyObserver.observe(s));
+
+// ===================== REVEAL ON SCROLL =====================
+const revealObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, {threshold:.15});
+document.querySelectorAll('.reveal').forEach(el=> revealObserver.observe(el));
+
+// ===================== PROGRESS BAR (mobile) =====================
+const progressBar = document.getElementById('progressBar');
+window.addEventListener('scroll', ()=>{
+  const h = document.documentElement;
+  const pct = (h.scrollTop)/(h.scrollHeight - h.clientHeight) * 100;
+  progressBar.style.width = pct + '%';
+});
+
+// ===================== COUNTER =====================
+const statRepos = document.getElementById('statRepos');
+let counted = false;
+const counterObserver = new IntersectionObserver((entries)=>{
+  entries.forEach(entry=>{
+    if(entry.isIntersecting && !counted){
+      counted = true;
+      const target = parseInt(statRepos.dataset.target,10);
+      let cur = 0;
+      const step = ()=>{
+        cur++;
+        statRepos.textContent = String(cur).padStart(2,'0');
+        if(cur < target) requestAnimationFrame(()=> setTimeout(step, 140));
+      };
+      step();
+    }
+  });
+}, {threshold:.5});
+counterObserver.observe(statRepos);
+
+// ===================== TYPING EFFECT =====================
+const codeStr = `<span class="kw">public class</span> Cayque <span class="kw">implements</span> Developer {
+
+    <span class="kw">private final</span> String role = <span class="str">"Backend Developer"</span>;
+    <span class="kw">private final</span> String founder = <span class="str">"PetPredictCore"</span>;
+    <span class="kw">private final</span> String[] stack = {
+        <span class="str">"Java 21"</span>, <span class="str">"Spring Boot 3.2"</span>,
+        <span class="str">"PostgreSQL"</span>, <span class="str">"Docker"</span>
+    };
+
+    <span class="kw">public static void</span> main(String[] args) {
+        <span class="kw">new</span> Cayque().buildFuture();
+    }
+}`;
+
+const typedEl = document.getElementById('typed-code');
+const termLog = document.getElementById('termLog');
+termLog.style.display = 'none';
+
+if(reducedMotion){
+  typedEl.innerHTML = codeStr;
+  termLog.style.display = 'block';
+} else {
+  const parts = codeStr.split(/(<[^>]+>)/g);
+  let partIndex = 0, charIndex = 0;
+  let buffer = '';
+  function typeStep(){
+    if(partIndex >= parts.length){
+      typedEl.innerHTML = buffer;
+      termLog.style.display = 'block';
+      return;
+    }
+    const part = parts[partIndex];
+    if(part.startsWith('<')){
+      buffer += part;
+      typedEl.innerHTML = buffer + '<span class="term-cursor"></span>';
+      partIndex++;
+      requestAnimationFrame(()=> setTimeout(typeStep, 5));
+      return;
+    }
+    buffer += part[charIndex];
+    typedEl.innerHTML = buffer + '<span class="term-cursor"></span>';
+    charIndex++;
+    if(charIndex >= part.length){
+      charIndex = 0;
+      partIndex++;
+    }
+    setTimeout(typeStep, 14);
+  }
+  setTimeout(typeStep, 500);
+}
+
+// ===================== SPACE BACKGROUND (parallax) =====================
+const canvas = document.getElementById('bg-canvas');
+const ctx = canvas.getContext('2d');
+let W, H, stars = [], nebulae = [], ships = [];
+const mouse = {x:0,y:0};
+let mx = 0, my = 0;
+
+function spawnShip(){
+  const edge = Math.floor(Math.random()*4);
+  let x, y;
+  const speed = 0.22 + Math.random()*0.3;
+  if(edge===0){ x=-60; y=Math.random()*H; }
+  else if(edge===1){ x=W+60; y=Math.random()*H; }
+  else if(edge===2){ x=Math.random()*W; y=-60; }
+  else { x=Math.random()*W; y=H+60; }
+  const targetX = W*(0.15+Math.random()*0.7);
+  const targetY = H*(0.15+Math.random()*0.7);
+  const dx = targetX-x, dy = targetY-y;
+  const dist = Math.sqrt(dx*dx+dy*dy) || 1;
+  return {
+    x, y,
+    vx:(dx/dist)*speed, vy:(dy/dist)*speed,
+    size: 12+Math.random()*7,
+    trail: [],
+    color: Math.random()>0.5 ? '139,92,246' : '45,226,201'
+  };
+}
+
+function drawShip(s){
+  s.trail.unshift({x:s.x, y:s.y});
+  if(s.trail.length>16) s.trail.pop();
+  s.x += s.vx; s.y += s.vy;
+
+  s.trail.forEach((p,i)=>{
+    const alpha = (1-i/s.trail.length)*0.22;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, 1.3, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(${s.color},${alpha})`;
+    ctx.fill();
+  });
+
+  const angle = Math.atan2(s.vy, s.vx);
+  ctx.save();
+  ctx.translate(s.x, s.y);
+  ctx.rotate(angle);
+  ctx.beginPath();
+  ctx.moveTo(s.size, 0);
+  ctx.lineTo(-s.size*0.55, s.size*0.42);
+  ctx.lineTo(-s.size*0.28, 0);
+  ctx.lineTo(-s.size*0.55, -s.size*0.42);
+  ctx.closePath();
+  ctx.fillStyle = `rgba(${s.color},0.55)`;
+  ctx.fill();
+  ctx.strokeStyle = `rgba(${s.color},0.85)`;
+  ctx.lineWidth = 1;
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(s.size*0.15, 0, s.size*0.16, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.fill();
+  ctx.restore();
+}
+
+function resizeCanvas(){
+  W = canvas.width = window.innerWidth;
+  H = canvas.height = window.innerHeight;
+}
+
+function initSpace(){
+  stars = [];
+  const count = Math.min(150, Math.floor((W*H)/9000));
+  for(let i=0;i<count;i++){
+    stars.push({
+      x: Math.random()*W,
+      y: Math.random()*H,
+      r: 0.5 + Math.random()*1.6,
+      depth: 0.25 + Math.random()*0.85,
+      vx: (Math.random()-.5)*.06,
+      vy: (Math.random()-.5)*.06,
+      phase: Math.random()*Math.PI*2,
+      speed: 0.5 + Math.random()*1.5
+    });
+  }
+  const maxDim = Math.max(W,H);
+  nebulae = [
+    {x:W*0.18, y:H*0.22, r:maxDim*0.32, color:'139,92,246', depth:0.18},
+    {x:W*0.82, y:H*0.18, r:maxDim*0.26, color:'45,226,201', depth:0.30},
+    {x:W*0.50, y:H*0.85, r:maxDim*0.34, color:'255,182,39', depth:0.12},
+    {x:W*0.10, y:H*0.80, r:maxDim*0.22, color:'139,92,246', depth:0.40}
+  ];
+
+  if(!ships.length){
+    ships = [spawnShip(), spawnShip()];
+  }
+}
+
+window.addEventListener('resize', ()=>{ resizeCanvas(); initSpace(); });
+window.addEventListener('mousemove', (e)=>{
+  mouse.x = e.clientX; mouse.y = e.clientY;
+  mx = (mouse.x - W/2) / (W/2);
+  my = (mouse.y - H/2) / (H/2);
+});
+
+let t = 0;
+function drawSpace(){
+  t += 1;
+  ctx.clearRect(0,0,W,H);
+
+  nebulae.forEach(n=>{
+    const driftX = Math.sin(t*0.0006 + n.x*0.001)*30;
+    const driftY = Math.cos(t*0.0005 + n.y*0.001)*20;
+    const px = n.x + mx*60*n.depth + driftX;
+    const py = n.y + my*60*n.depth + driftY;
+    const grad = ctx.createRadialGradient(px,py,0,px,py,n.r);
+    grad.addColorStop(0, `rgba(${n.color},0.16)`);
+    grad.addColorStop(1, `rgba(${n.color},0)`);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0,0,W,H);
+  });
+
+  const near = stars.filter(s=>s.depth>0.62);
+  for(let i=0;i<near.length;i++){
+    for(let j=i+1;j<near.length;j++){
+      const a=near[i], b=near[j];
+      const dx=a.x-b.x, dy=a.y-b.y;
+      const d = Math.sqrt(dx*dx+dy*dy);
+      if(d < 110){
+        ctx.strokeStyle = `rgba(139,92,246,${(1-d/110)*0.15})`;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y);
+        ctx.stroke();
+      }
+    }
+  }
+
+  stars.forEach(s=>{
+    s.x += s.vx; s.y += s.vy;
+    if(s.x<0) s.x=W; if(s.x>W) s.x=0;
+    if(s.y<0) s.y=H; if(s.y>H) s.y=0;
+    const shiftX = mx*22*s.depth;
+    const shiftY = my*22*s.depth;
+    const twinkle = 0.5 + 0.5*Math.sin(t*0.02*s.speed + s.phase);
+    ctx.beginPath();
+    ctx.arc(s.x+shiftX, s.y+shiftY, s.r, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(225,225,245,${0.25+twinkle*0.6})`;
+    ctx.fill();
+  });
+
+  ships.forEach((s, i)=>{
+    drawShip(s);
+    if(s.x < -100 || s.x > W+100 || s.y < -100 || s.y > H+100){
+      ships[i] = spawnShip();
+    }
+  });
+}
+
+resizeCanvas();
+initSpace();
+
+if(!reducedMotion){
+  function loop(){ drawSpace(); requestAnimationFrame(loop); }
+  loop();
+} else {
+  drawSpace();
+}
+</script>
+</body>
+</html>
